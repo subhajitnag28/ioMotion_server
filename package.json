@@ -1,5 +1,5 @@
 {
-  "name": "iomotion_server",
+  "name": "server",
   "version": "1.0.0",
   "description": "iomotion node js server",
   "main": "dist/server.js",
@@ -26,7 +26,7 @@
     "crypto": "^1.0.1",
     "express": "^4.16.3",
     "fs": "0.0.1-security",
-    "handlebars": "^4.0.12",
+    "handlebars": "^4.1.1",
     "joi": "^14.3.1",
     "joi-objectid": "^2.0.0",
     "jsonwebtoken": "^8.5.0",
@@ -34,7 +34,8 @@
     "morgan": "^1.9.1",
     "multer": "^1.4.1",
     "nodemailer": "^5.0.0",
-    "nodemon": "^1.17.3",
+    "nodemon": "^1.18.10",
+    "package-name": "^0.1.0",
     "path": "^0.12.7"
   }
 }
