@@ -62,22 +62,14 @@ class App {
      * Create image upload path
      */
     private createImageUploadPath() {
-        if (this.app.get('env') == "development") {
-            const uploadImage = multer({ dest: 'lib/uploadImage/' });
-        } else {
-            const uploadImage = multer({ dest: 'dist/uploadImage/' });
-        }
+        multer({ dest: 'dist/uploadImage/' });
     }
 
     /**
      * Create microservices path
      */
     private createMicroservicesPath() {
-        if (this.app.get('env') == "development") {
-            const microservicesImage = multer({ dest: 'lib/microservicesImage/' });
-        } else {
-            const microservicesImage = multer({ dest: 'dist/microservicesImage/' });
-        }
+        multer({ dest: 'dist/microservicesImage/' });
     }
 }
 
