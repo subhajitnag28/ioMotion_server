@@ -1,12 +1,14 @@
 import { EdgeDeviceConfigCreateController } from "../controllers/EdgeDeviceConfigController/EdgeDeviceConfigCreateController";
 import { EdgeDeviceConfigUpdateController } from "../controllers/EdgeDeviceConfigController/EdgeDeviceConfigUpdateController";
 import { EdgeDeviceConfigGetController } from "../controllers/EdgeDeviceConfigController/EdgeDeviceConfigGetController";
+import { EdgeDeviceConfigEnableDisableController } from "../controllers/EdgeDeviceConfigController/EdgeDeviceConfigEnableDisableController";
 
 export class EdgeDeviceConfigRoutes {
 
     public edgeDeviceConfigCreateController: EdgeDeviceConfigCreateController = new EdgeDeviceConfigCreateController();
     public edgeDeviceConfigUpdateController: EdgeDeviceConfigUpdateController = new EdgeDeviceConfigUpdateController();
     public edgeDeviceConfigGetController: EdgeDeviceConfigGetController = new EdgeDeviceConfigGetController();
+    public edgeDeviceConfigEnableDisableController: EdgeDeviceConfigEnableDisableController = new EdgeDeviceConfigEnableDisableController();
 
     public routes(app: any): void {
 
@@ -185,5 +187,55 @@ export class EdgeDeviceConfigRoutes {
          * }
          */
         app.route('/edge/devcon/get-troubleshoot-config').get(this.edgeDeviceConfigGetController.getTroubleshootConfig);
+
+        /**
+         * Controller config enable or disable
+         * type: Post,
+         * parameters:{
+         *  customer_id: ObjectId,
+         * installed: true / false
+         * }
+         */
+        app.route('/edge/devcon/enable-disable-controller-config').post(this.edgeDeviceConfigEnableDisableController.enableDisableControllerConfig);
+
+        /**
+         * Wifi config enable or disable
+         * type: Post,
+         * parameters:{
+         *  customer_id: ObjectId,
+         * installed: true / false
+         * }
+         */
+        app.route('/edge/devcon/enable-disable-wifi-config').post(this.edgeDeviceConfigEnableDisableController.enableDisableWifiConfig);
+
+        /**
+         * Carrier config enable or disable
+         * type: Post,
+         * parameters:{
+         *  customer_id: ObjectId,
+         * installed: true / false
+         * }
+         */
+        app.route('/edge/devcon/enable-disable-carrier-config').post(this.edgeDeviceConfigEnableDisableController.enableDisableCarrierConfig);
+
+        /**
+        * Ble config enable or disable
+        * type: Post,
+        * parameters:{
+        *  customer_id: ObjectId,
+        * installed: true / false
+        * }
+        */
+        app.route('/edge/devcon/enable-disable-ble-config').post(this.edgeDeviceConfigEnableDisableController.enableDisableBleConfig);
+
+        /**
+        * Troubleshoot config enable or disable
+        * type: Post,
+        * parameters:{
+        *  customer_id: ObjectId,
+        * installed: true / false
+        * }
+        */
+        app.route('/edge/devcon/enable-disable-troubleshoot-config').post(this.edgeDeviceConfigEnableDisableController.enableDisableTroubleshootConfig);
     }
 }
