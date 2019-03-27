@@ -44,7 +44,7 @@ export class AdminRoutes {
 		 * 	otp: length must to be 6
 		 * }
 		*/
-		app.route('/admin/password-reset').post(this.adminController.passwordReset);
+		app.route('/admin/reset-password').post(this.adminController.passwordReset);
 
 		/** 
 		 * Get admin details

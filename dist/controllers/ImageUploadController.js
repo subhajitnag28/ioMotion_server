@@ -8,7 +8,7 @@ const db = require("../database");
 const ObjectId = mongodb.ObjectID;
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './dist/uploadImage');
+        cb(null, './lib/uploadImage');
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
@@ -24,18 +24,20 @@ class ImageUploadController {
             return res.status(403).json({
                 success: false,
                 data: {
+                    status: 403,
                     message: 'Authorization token not provided'
                 }
             });
         }
         else {
-            if (token != null) {
+            if (token != 'null') {
                 jwt.verify(token, 'ioMotionAdmin', function (err, decoded) {
                     if (err) {
                         if (err.name == "TokenExpiredError") {
                             res.status(401).json({
                                 success: false,
                                 data: {
+                                    status: 401,
                                     message: 'Unauthorized'
                                 }
                             });
@@ -44,6 +46,7 @@ class ImageUploadController {
                             res.status(401).json({
                                 success: false,
                                 data: {
+                                    status: 401,
                                     message: 'Unauthorized'
                                 }
                             });
@@ -52,6 +55,7 @@ class ImageUploadController {
                             res.status(500).json({
                                 success: false,
                                 data: {
+                                    status: 500,
                                     message: 'Server error'
                                 }
                             });
@@ -76,7 +80,8 @@ class ImageUploadController {
                                 res.status(500).json({
                                     success: false,
                                     data: {
-                                        message: error
+                                        status: 500,
+                                        message: 'Server error'
                                     }
                                 });
                             }
@@ -94,6 +99,7 @@ class ImageUploadController {
                                             res.status(500).json({
                                                 success: false,
                                                 data: {
+                                                    status: 500,
                                                     message: 'Server error'
                                                 }
                                             });
@@ -102,6 +108,7 @@ class ImageUploadController {
                                             res.status(200).json({
                                                 success: true,
                                                 data: {
+                                                    status: 200,
                                                     filename: image.filename,
                                                     message: "Image upload successfully."
                                                 }
@@ -109,6 +116,15 @@ class ImageUploadController {
                                         }
                                     });
                                 }
+                            }
+                            else {
+                                res.status(400).json({
+                                    success: false,
+                                    data: {
+                                        status: 400,
+                                        message: "Please select an image first"
+                                    }
+                                });
                             }
                         });
                     }

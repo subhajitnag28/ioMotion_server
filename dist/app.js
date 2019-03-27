@@ -56,13 +56,13 @@ class App {
      * Create image upload path
      */
     createImageUploadPath() {
-        multer({ dest: 'dist/uploadImage/' });
+        multer({ dest: 'lib/uploadImage/' });
     }
     /**
      * Create microservices path
      */
     createMicroservicesPath() {
-        multer({ dest: 'dist/microservicesImage/' });
+        multer({ dest: 'lib/microservicesImage/' });
     }
 }
 exports.default = new App().app;

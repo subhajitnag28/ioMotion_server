@@ -12,7 +12,7 @@ class MicroservicesRoutes {
          * parameters:{
          *  microserviceName: within 3 to 50 character,
          *  microserviceDescription: within 2 to 500,
-         *  type: available/install/roadmap,
+         *  type: available/roadmap,
          *  adminId: ObjectId,
          *  image: Image filename, example file-1552223230074.jpg, extension .jpg, .jpeg, .png
          * }
@@ -22,7 +22,7 @@ class MicroservicesRoutes {
          * Get microservices on type
          * type: available/roadmap
          */
-        app.route('/getMicroservicesOnType').post(this.microservicesController.getMicroservicesOnType);
+        app.route('/get-microservices-on-type').post(this.microservicesController.getMicroservicesOnType);
         /**
          * Install microservices
          * type: Post,
@@ -35,7 +35,7 @@ class MicroservicesRoutes {
          *  userId: ObjectId
          * }
          */
-        app.route('/installMicroservice').post(this.microservicesController.installMicroservice);
+        app.route('/install-microservice').post(this.microservicesController.installMicroservice);
         /**
          * Get installed microservices
          * type: Post,
@@ -44,7 +44,7 @@ class MicroservicesRoutes {
          *  type: install
          * }
          */
-        app.route('/getInstalledMicroservices').post(this.microservicesController.getInstalledMicroservices);
+        app.route('/get-installed-microservices').post(this.microservicesController.getInstalledMicroservices);
         /**
          * Get list of microservices added by admin with pagination
          * type: Post,
@@ -53,15 +53,15 @@ class MicroservicesRoutes {
          *  size: maximum 2 character, default value 10
          * }
          */
-        app.route('/getMicroservicesList').post(this.microservicesController.getMicroservicesList);
+        app.route('/get-microservices-list').post(this.microservicesController.getMicroservicesList);
         /**
-         * Update microservice
+         * Update microservice details
          * type: Post,
          * parameters:{
          *  microserviceId: ObjectId
          * }
          */
-        app.route('/updateMicroservice').post(this.microservicesController.updateMicroservice);
+        app.route('/update-microservice-details').post(this.microservicesController.updateMicroserviceDetails);
         /**
          * Search microservices list
          * type: Post,
@@ -72,7 +72,7 @@ class MicroservicesRoutes {
          *  size: maximum 2 character, default value 10
          * }
          */
-        app.route('/searchMicroservices').post(this.microservicesController.searchMicroservices);
+        app.route('/search-microservices').post(this.microservicesController.searchMicroservices);
     }
 }
 exports.MicroservicesRoutes = MicroservicesRoutes;

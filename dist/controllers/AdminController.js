@@ -23,6 +23,7 @@ class AdminController {
                     res.status(400).json({
                         success: false,
                         data: {
+                            status: 400,
                             message: err.details[0].context.label
                         }
                     });
@@ -37,6 +38,7 @@ class AdminController {
                             res.status(500).json({
                                 success: false,
                                 data: {
+                                    status: 500,
                                     message: 'Server error'
                                 }
                             });
@@ -46,6 +48,7 @@ class AdminController {
                                 res.status(403).json({
                                     success: false,
                                     data: {
+                                        status: 403,
                                         message: "Email already exist"
                                     }
                                 });
@@ -60,6 +63,7 @@ class AdminController {
                                         res.status(500).json({
                                             success: false,
                                             data: {
+                                                status: 500,
                                                 message: 'Server error'
                                             }
                                         });
@@ -69,6 +73,7 @@ class AdminController {
                                         res.status(200).json({
                                             success: true,
                                             data: {
+                                                status: 200,
                                                 message: "Admin registration successfully, Please login to continue"
                                             }
                                         });
@@ -84,6 +89,7 @@ class AdminController {
             res.status(400).json({
                 success: false,
                 data: {
+                    status: 400,
                     message: "Email and Password are required"
                 }
             });
@@ -93,35 +99,37 @@ class AdminController {
      * Admin login
      */
     adminLogin(req, res) {
-        const request_body = req.body;
-        if (request_body.email && request_body.password) {
-            const schema = Joi.object().keys({
-                email: Joi.string().email({ minDomainAtoms: 2 }).label("Please provide a valid email address").trim().replace(/ /g, ''),
-                password: Joi.string().min(6).label("Password minimum 6 character long").trim().replace(/ /g, '')
-            });
-            Joi.validate(request_body, schema, function (err, value) {
-                if (err) {
-                    res.status(400).json({
-                        success: false,
-                        data: {
-                            message: err.details[0].context.label
-                        }
-                    });
+        const token = req.headers['authorization'];
+        if (!token) {
+            return res.status(403).json({
+                success: false,
+                data: {
+                    status: 403,
+                    message: 'Authorization token not provided'
                 }
-                else {
-                    const data = value;
-                    const token = req.headers['authorization'];
-                    const admin = db.get().collection('admin');
-                    const authToken = db.get().collection('authToken');
-                    if (!token) {
-                        return res.status(403).json({
+            });
+        }
+        else {
+            const request_body = req.body;
+            if (request_body.email && request_body.password) {
+                const schema = Joi.object().keys({
+                    email: Joi.string().email({ minDomainAtoms: 2 }).label("Please provide a valid email address").trim().replace(/ /g, ''),
+                    password: Joi.string().min(6).label("Password minimum 6 character long").trim().replace(/ /g, '')
+                });
+                Joi.validate(request_body, schema, function (err, value) {
+                    if (err) {
+                        res.status(400).json({
                             success: false,
                             data: {
-                                message: 'Authorization token not provided'
+                                status: 400,
+                                message: err.details[0].context.label
                             }
                         });
                     }
                     else {
+                        const data = value;
+                        const admin = db.get().collection('admin');
+                        const authToken = db.get().collection('authToken');
                         if (token == 'null') {
                             admin.find({
                                 email: data.email
@@ -130,6 +138,7 @@ class AdminController {
                                     res.status(500).json({
                                         success: false,
                                         data: {
+                                            status: 500,
                                             message: 'Server error'
                                         }
                                     });
@@ -140,7 +149,7 @@ class AdminController {
                                         const decryptedPassword = sp.getPasswordFromHash(adminData.saltKey, data.password);
                                         if (decryptedPassword.passwordHash && decryptedPassword.passwordHash == adminData.salt) {
                                             const jwtToken = jwt.sign({ adminId: new ObjectId(adminData._id), email: adminData.email }, 'ioMotionAdmin', {
-                                                expiresIn: 120
+                                                expiresIn: 3600
                                             });
                                             if (jwtToken) {
                                                 const adminToken = {
@@ -154,6 +163,7 @@ class AdminController {
                                                         res.status(500).json({
                                                             success: false,
                                                             data: {
+                                                                status: 500,
                                                                 message: 'Server error'
                                                             }
                                                         });
@@ -164,6 +174,9 @@ class AdminController {
                                                         delete adminData.email;
                                                         delete adminData.saltKey;
                                                         delete adminData.salt;
+                                                        if (adminData.imageFileName) {
+                                                            delete adminData.imageFileName;
+                                                        }
                                                         res.status(200).json({
                                                             success: true,
                                                             data: adminData
@@ -176,6 +189,7 @@ class AdminController {
                                             res.status(404).json({
                                                 success: false,
                                                 data: {
+                                                    status: 404,
                                                     messgae: "Email and password does not match"
                                                 }
                                             });
@@ -185,7 +199,8 @@ class AdminController {
                                         res.status(404).json({
                                             success: false,
                                             data: {
-                                                messgae: "Admin not found, Please provide correct credentials"
+                                                status: 404,
+                                                messgae: "User not found"
                                             }
                                         });
                                     }
@@ -203,6 +218,7 @@ class AdminController {
                                                 res.status(500).json({
                                                     success: false,
                                                     data: {
+                                                        status: 500,
                                                         message: 'Server error'
                                                     }
                                                 });
@@ -217,6 +233,7 @@ class AdminController {
                                                                 res.status(500).json({
                                                                     success: false,
                                                                     data: {
+                                                                        status: 500,
                                                                         message: 'Server error'
                                                                     }
                                                                 });
@@ -224,7 +241,7 @@ class AdminController {
                                                             else {
                                                                 const tokRes = tokenRes1[0];
                                                                 const jwtToken = jwt.sign({ adminId: new ObjectId(adminData._id), email: adminData.email }, 'ioMotionAdmin', {
-                                                                    expiresIn: 120
+                                                                    expiresIn: 3600
                                                                 });
                                                                 if (jwtToken) {
                                                                     tokRes.token = jwtToken;
@@ -240,6 +257,7 @@ class AdminController {
                                                                             res.status(500).json({
                                                                                 success: false,
                                                                                 data: {
+                                                                                    status: 500,
                                                                                     message: 'Server error'
                                                                                 }
                                                                             });
@@ -252,7 +270,10 @@ class AdminController {
                                                                             delete adminData.salt;
                                                                             res.status(200).json({
                                                                                 success: true,
-                                                                                data: adminData
+                                                                                data: {
+                                                                                    status: 200,
+                                                                                    adminDetails: adminData
+                                                                                }
                                                                             });
                                                                         }
                                                                     });
@@ -264,6 +285,7 @@ class AdminController {
                                                         res.status(404).json({
                                                             success: false,
                                                             data: {
+                                                                status: 404,
                                                                 messgae: "Email and password does not match"
                                                             }
                                                         });
@@ -273,10 +295,20 @@ class AdminController {
                                                     res.status(404).json({
                                                         success: false,
                                                         data: {
-                                                            messgae: "Admin not found, Please provide correct credentials"
+                                                            status: 404,
+                                                            messgae: "User not found"
                                                         }
                                                     });
                                                 }
+                                            }
+                                        });
+                                    }
+                                    else if (err3.name == "JsonWebTokenError") {
+                                        res.status(401).json({
+                                            success: false,
+                                            data: {
+                                                status: 401,
+                                                message: 'Unauthorized'
                                             }
                                         });
                                     }
@@ -284,6 +316,7 @@ class AdminController {
                                         res.status(500).json({
                                             success: false,
                                             data: {
+                                                status: 500,
                                                 message: 'Server error'
                                             }
                                         });
@@ -297,6 +330,7 @@ class AdminController {
                                             res.status(500).json({
                                                 success: false,
                                                 data: {
+                                                    status: 500,
                                                     message: 'Server error'
                                                 }
                                             });
@@ -311,6 +345,7 @@ class AdminController {
                                                             res.status(500).json({
                                                                 success: false,
                                                                 data: {
+                                                                    status: 500,
                                                                     message: 'Server error'
                                                                 }
                                                             });
@@ -319,6 +354,7 @@ class AdminController {
                                                             res.status(200).json({
                                                                 success: true,
                                                                 data: {
+                                                                    status: 200,
                                                                     token: tokenRes3[0].token
                                                                 }
                                                             });
@@ -329,6 +365,7 @@ class AdminController {
                                                     res.status(404).json({
                                                         success: false,
                                                         data: {
+                                                            status: 404,
                                                             messgae: "Email and password does not match"
                                                         }
                                                     });
@@ -338,7 +375,8 @@ class AdminController {
                                                 res.status(404).json({
                                                     success: false,
                                                     data: {
-                                                        messgae: "Admin not found, Please provide correct credentials"
+                                                        status: 404,
+                                                        messgae: "User not found"
                                                     }
                                                 });
                                             }
@@ -348,16 +386,17 @@ class AdminController {
                             });
                         }
                     }
-                }
-            });
-        }
-        else {
-            res.status(400).json({
-                success: false,
-                data: {
-                    message: "Email and Password are required"
-                }
-            });
+                });
+            }
+            else {
+                res.status(400).json({
+                    success: false,
+                    data: {
+                        status: 400,
+                        message: "Email and Password are required"
+                    }
+                });
+            }
         }
     }
     /**
@@ -374,6 +413,7 @@ class AdminController {
                     res.status(400).json({
                         success: false,
                         data: {
+                            status: 400,
                             message: err.details[0].context.label
                         }
                     });
@@ -389,6 +429,7 @@ class AdminController {
                             res.status(500).json({
                                 success: false,
                                 data: {
+                                    status: 500,
                                     message: 'Server error'
                                 }
                             });
@@ -403,6 +444,7 @@ class AdminController {
                                         res.status(500).json({
                                             success: false,
                                             data: {
+                                                status: 500,
                                                 message: 'Server error'
                                             }
                                         });
@@ -416,6 +458,7 @@ class AdminController {
                                                     res.status(500).json({
                                                         success: false,
                                                         data: {
+                                                            status: 500,
                                                             message: 'Server error'
                                                         }
                                                     });
@@ -430,6 +473,7 @@ class AdminController {
                                                             res.status(500).json({
                                                                 success: false,
                                                                 data: {
+                                                                    status: 500,
                                                                     message: 'Server error'
                                                                 }
                                                             });
@@ -438,6 +482,7 @@ class AdminController {
                                                             res.status(200).json({
                                                                 success: true,
                                                                 data: {
+                                                                    status: 200,
                                                                     message: "Plesae check your mail for the otp"
                                                                 }
                                                             });
@@ -456,6 +501,7 @@ class AdminController {
                                                     res.status(500).json({
                                                         success: false,
                                                         data: {
+                                                            status: 500,
                                                             message: 'Server error'
                                                         }
                                                     });
@@ -464,6 +510,7 @@ class AdminController {
                                                     res.status(200).json({
                                                         success: true,
                                                         data: {
+                                                            status: 200,
                                                             message: "Plesae check your mail for the otp"
                                                         }
                                                     });
@@ -477,7 +524,8 @@ class AdminController {
                                 res.status(404).json({
                                     success: false,
                                     data: {
-                                        message: "Admin not found, Please provide correct email address"
+                                        status: 404,
+                                        message: "User not found"
                                     }
                                 });
                             }
@@ -490,6 +538,7 @@ class AdminController {
             res.status(400).json({
                 success: false,
                 data: {
+                    status: 400,
                     message: "Email is required"
                 }
             });
@@ -511,6 +560,7 @@ class AdminController {
                     res.status(400).json({
                         success: false,
                         data: {
+                            status: 400,
                             message: err.details[0].context.label
                         }
                     });
@@ -526,6 +576,7 @@ class AdminController {
                             res.status(500).json({
                                 success: false,
                                 data: {
+                                    status: 500,
                                     message: 'Server error'
                                 }
                             });
@@ -550,7 +601,8 @@ class AdminController {
                                             res.status(500).json({
                                                 success: false,
                                                 data: {
-                                                    message: err2
+                                                    status: 500,
+                                                    message: 'Server error'
                                                 }
                                             });
                                         }
@@ -560,14 +612,18 @@ class AdminController {
                                             }, function (err5, res5) {
                                                 if (err5) {
                                                     res.status(500).json({
-                                                        status: false,
-                                                        data: err5
+                                                        success: false,
+                                                        data: {
+                                                            status: 500,
+                                                            message: 'Server error'
+                                                        }
                                                     });
                                                 }
                                                 else {
                                                     res.status(200).json({
                                                         success: true,
                                                         data: {
+                                                            status: 200,
                                                             message: "Password changed successfully, Please login to continue"
                                                         }
                                                     });
@@ -580,6 +636,7 @@ class AdminController {
                                     res.status(404).json({
                                         success: false,
                                         data: {
+                                            status: 404,
                                             message: "Otp does not match"
                                         }
                                     });
@@ -589,7 +646,8 @@ class AdminController {
                                 res.status(404).json({
                                     success: false,
                                     data: {
-                                        message: "Admin not found"
+                                        status: 404,
+                                        message: "User not found"
                                     }
                                 });
                             }
@@ -602,6 +660,7 @@ class AdminController {
             res.status(400).json({
                 success: false,
                 data: {
+                    status: 400,
                     message: "Email, Password and otp are required"
                 }
             });
@@ -616,6 +675,7 @@ class AdminController {
             return res.status(403).json({
                 success: false,
                 data: {
+                    status: 403,
                     message: 'Authorization token not provided'
                 }
             });
@@ -628,6 +688,7 @@ class AdminController {
                             res.status(401).json({
                                 success: false,
                                 data: {
+                                    status: 401,
                                     message: 'Unauthorized'
                                 }
                             });
@@ -636,6 +697,7 @@ class AdminController {
                             res.status(401).json({
                                 success: false,
                                 data: {
+                                    status: 401,
                                     message: 'Unauthorized'
                                 }
                             });
@@ -644,6 +706,7 @@ class AdminController {
                             res.status(500).json({
                                 success: false,
                                 data: {
+                                    status: 500,
                                     message: 'Server error'
                                 }
                             });
@@ -658,7 +721,10 @@ class AdminController {
                             if (err1) {
                                 res.status(500).json({
                                     success: false,
-                                    data: 'Server error'
+                                    data: {
+                                        status: 500,
+                                        message: 'Server error'
+                                    }
                                 });
                             }
                             else {
@@ -666,10 +732,12 @@ class AdminController {
                                     const adminDetails = success[0];
                                     delete adminDetails.salt;
                                     delete adminDetails.saltKey;
+                                    delete adminDetails._id;
                                     res.status(200).json({
                                         success: true,
                                         data: {
-                                            userDetails: adminDetails
+                                            status: 200,
+                                            adminDetails: adminDetails
                                         }
                                     });
                                 }
@@ -677,7 +745,8 @@ class AdminController {
                                     res.status(404).json({
                                         success: false,
                                         data: {
-                                            message: "Admin not found"
+                                            status: 404,
+                                            message: "User not found"
                                         }
                                     });
                                 }
@@ -698,6 +767,7 @@ class AdminController {
             return res.status(403).json({
                 success: false,
                 data: {
+                    status: 403,
                     message: 'Authorization token not provided'
                 }
             });
@@ -710,6 +780,7 @@ class AdminController {
                             res.status(401).json({
                                 success: false,
                                 data: {
+                                    status: 401,
                                     message: 'Unauthorized'
                                 }
                             });
@@ -718,6 +789,7 @@ class AdminController {
                             res.status(401).json({
                                 success: false,
                                 data: {
+                                    status: 401,
                                     message: 'Unauthorized'
                                 }
                             });
@@ -726,6 +798,7 @@ class AdminController {
                             res.status(500).json({
                                 success: false,
                                 data: {
+                                    status: 500,
                                     message: 'Server error'
                                 }
                             });
@@ -740,7 +813,10 @@ class AdminController {
                             if (err1) {
                                 res.status(500).json({
                                     success: false,
-                                    data: 'Server error'
+                                    data: {
+                                        status: 500,
+                                        message: 'Server error'
+                                    }
                                 });
                             }
                             else {
@@ -757,6 +833,7 @@ class AdminController {
                                             res.status(500).json({
                                                 success: false,
                                                 data: {
+                                                    status: 500,
                                                     message: 'Server error'
                                                 }
                                             });
@@ -765,6 +842,7 @@ class AdminController {
                                             res.status(200).json({
                                                 success: true,
                                                 data: {
+                                                    status: 200,
                                                     message: "Admin details updated successfully"
                                                 }
                                             });
@@ -775,7 +853,8 @@ class AdminController {
                                     res.status(404).json({
                                         success: false,
                                         data: {
-                                            message: "Admin not found"
+                                            status: 404,
+                                            message: "User not found"
                                         }
                                     });
                                 }
@@ -790,34 +869,36 @@ class AdminController {
      * Change password
      */
     changePassword(req, res) {
-        const request_body = req.body;
-        if (request_body.oldPassword && request_body.newPassword) {
-            const schema = Joi.object().keys({
-                oldPassword: Joi.string().min(6).label("Old password should be minimum 6 character long").trim().replace(/ /g, ''),
-                newPassword: Joi.string().min(6).label("New password should be minimum 6 character long").trim().replace(/ /g, '')
-            });
-            Joi.validate(request_body, schema, function (err, value) {
-                if (err) {
-                    res.status(400).json({
-                        success: false,
-                        data: {
-                            message: err.details[0].context.label
-                        }
-                    });
+        const token = req.headers['authorization'];
+        if (!token) {
+            return res.status(403).json({
+                success: false,
+                data: {
+                    status: 403,
+                    message: 'Authorization token not provided'
                 }
-                else {
-                    const data = value;
-                    const token = req.headers['authorization'];
-                    const admin = db.get().collection('admin');
-                    if (!token) {
-                        return res.status(403).json({
+            });
+        }
+        else {
+            const request_body = req.body;
+            if (request_body.oldPassword && request_body.newPassword) {
+                const schema = Joi.object().keys({
+                    oldPassword: Joi.string().min(6).label("Old password should be minimum 6 character long").trim().replace(/ /g, ''),
+                    newPassword: Joi.string().min(6).label("New password should be minimum 6 character long").trim().replace(/ /g, '')
+                });
+                Joi.validate(request_body, schema, function (err, value) {
+                    if (err) {
+                        res.status(400).json({
                             success: false,
                             data: {
-                                message: 'Authorization token not provided'
+                                status: 400,
+                                message: err.details[0].context.label
                             }
                         });
                     }
                     else {
+                        const data = value;
+                        const admin = db.get().collection('admin');
                         if (token != 'null') {
                             jwt.verify(token, 'ioMotionAdmin', function (err1, decoded) {
                                 if (err1) {
@@ -825,6 +906,7 @@ class AdminController {
                                         res.status(401).json({
                                             success: false,
                                             data: {
+                                                status: 401,
                                                 message: 'Unauthorized'
                                             }
                                         });
@@ -833,6 +915,7 @@ class AdminController {
                                         res.status(401).json({
                                             success: false,
                                             data: {
+                                                status: 401,
                                                 message: 'Unauthorized'
                                             }
                                         });
@@ -841,6 +924,7 @@ class AdminController {
                                         res.status(500).json({
                                             success: false,
                                             data: {
+                                                status: 500,
                                                 message: 'Server error'
                                             }
                                         });
@@ -855,6 +939,7 @@ class AdminController {
                                             res.status(500).json({
                                                 success: false,
                                                 data: {
+                                                    status: 500,
                                                     message: 'Server error'
                                                 }
                                             });
@@ -881,6 +966,7 @@ class AdminController {
                                                             res.status(500).json({
                                                                 success: false,
                                                                 data: {
+                                                                    status: 500,
                                                                     message: 'Server error'
                                                                 }
                                                             });
@@ -889,6 +975,7 @@ class AdminController {
                                                             res.status(200).json({
                                                                 success: true,
                                                                 data: {
+                                                                    status: 200,
                                                                     message: "Password changed successfully, Please login to continue"
                                                                 }
                                                             });
@@ -899,6 +986,7 @@ class AdminController {
                                                     res.status(404).json({
                                                         success: false,
                                                         data: {
+                                                            status: 404,
                                                             message: "Please enter your old password correctly"
                                                         }
                                                     });
@@ -908,7 +996,8 @@ class AdminController {
                                                 res.status(404).json({
                                                     success: false,
                                                     data: {
-                                                        message: "Admin not found"
+                                                        status: 404,
+                                                        message: "User not found"
                                                     }
                                                 });
                                             }
@@ -918,16 +1007,17 @@ class AdminController {
                             });
                         }
                     }
-                }
-            });
-        }
-        else {
-            res.status(400).json({
-                success: false,
-                data: {
-                    message: "Old Password and new password are required"
-                }
-            });
+                });
+            }
+            else {
+                res.status(400).json({
+                    success: false,
+                    data: {
+                        status: 400,
+                        message: "Old Password and new password are required"
+                    }
+                });
+            }
         }
     }
 }

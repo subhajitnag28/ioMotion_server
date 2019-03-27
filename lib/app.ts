@@ -62,14 +62,14 @@ class App {
      * Create image upload path
      */
     private createImageUploadPath() {
-        multer({ dest: 'dist/uploadImage/' });
+        multer({ dest: 'lib/uploadImage/' });
     }
 
     /**
      * Create microservices path
      */
     private createMicroservicesPath() {
-        multer({ dest: 'dist/microservicesImage/' });
+        multer({ dest: 'lib/microservicesImage/' });
     }
 }
 
