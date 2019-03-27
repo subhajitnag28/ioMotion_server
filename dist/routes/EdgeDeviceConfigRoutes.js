@@ -42,7 +42,7 @@ class EdgeDeviceConfigRoutes {
          * parameters:{
          *  deviceId: 15 HexaDecimal number,
          *  lteId: 20 alphanumeric,
-         *  SecurityID: 15 alphanumeric,
+         *  securityID: 15 alphanumeric,
          *  misc: 15 alphanumeric,
          *  customer_id: ObjectId,
          *  installed: true

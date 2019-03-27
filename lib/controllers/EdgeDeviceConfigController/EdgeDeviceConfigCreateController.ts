@@ -333,7 +333,7 @@ export class EdgeDeviceConfigCreateController {
                             const schema = Joi.object().keys({
                                 deviceId: Joi.string().length(15).hex().label('Device Id must be 15 hexadecimal number').required().trim().replace(/ /g, ''),
                                 lteId: Joi.string().length(20).alphanum().label('LTE-ID must be 20 alphanumeric character long').required().trim().replace(/ /g, ''),
-                                SecurityID: Joi.string().length(15).alphanum().label('Security Id must be 15 alphanumeric character long').required().trim().replace(/ /g, ''),
+                                securityID: Joi.string().length(15).alphanum().label('Security Id must be 15 alphanumeric character long').required().trim().replace(/ /g, ''),
                                 misc: Joi.string().length(15).alphanum().label('Misc must be 15 alphanumeric character long').required().trim().replace(/ /g, ''),
                                 customer_id: Joi.objectId().label('Customer Id is required'),
                                 installed: Joi.boolean().label('installed is required')

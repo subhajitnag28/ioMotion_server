@@ -7,6 +7,6 @@ export class ImageUploadRoutes {
     public routes(app: any): void {
 
         // Admin image upload
-        app.route('/admin-image-upload').post(this.imageUploadController.uploadAdminImage);
+        app.route('/admin/image-upload').post(this.imageUploadController.uploadAdminImage);
     }
 }

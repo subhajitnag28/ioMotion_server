@@ -11,10 +11,8 @@ class MicroservicesRoutes {
          * type: Post,
          * parameters:{
          *  microserviceName: within 3 to 50 character,
-         *  microserviceDescription: within 2 to 500,
-         *  type: available/roadmap,
-         *  adminId: ObjectId,
-         *  image: Image filename, example file-1552223230074.jpg, extension .jpg, .jpeg, .png
+         *  microserviceDescription: within 2 to 500 character,
+         *  type: available/roadmap
          * }
          */
         app.route('/admin/add-microservices').post(this.microservicesController.addMicroservices);
@@ -53,7 +51,7 @@ class MicroservicesRoutes {
          *  size: maximum 2 character, default value 10
          * }
          */
-        app.route('/get-microservices-list').post(this.microservicesController.getMicroservicesList);
+        app.route('/admin/get-microservices-list').post(this.microservicesController.getMicroservicesList);
         /**
          * Update microservice details
          * type: Post,
@@ -61,7 +59,7 @@ class MicroservicesRoutes {
          *  microserviceId: ObjectId
          * }
          */
-        app.route('/update-microservice-details').post(this.microservicesController.updateMicroserviceDetails);
+        app.route('/admin/update-microservice-details').post(this.microservicesController.updateMicroserviceDetails);
         /**
          * Search microservices list
          * type: Post,
@@ -72,7 +70,7 @@ class MicroservicesRoutes {
          *  size: maximum 2 character, default value 10
          * }
          */
-        app.route('/search-microservices').post(this.microservicesController.searchMicroservices);
+        app.route('/admin/search-microservices').post(this.microservicesController.searchMicroservices);
     }
 }
 exports.MicroservicesRoutes = MicroservicesRoutes;
