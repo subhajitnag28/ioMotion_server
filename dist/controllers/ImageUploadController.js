@@ -8,7 +8,7 @@ const db = require("../database");
 const ObjectId = mongodb.ObjectID;
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './lib/uploadImage');
+        cb(null, './dist/uploadImage');
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));

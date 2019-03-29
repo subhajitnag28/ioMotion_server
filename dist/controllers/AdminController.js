@@ -179,7 +179,10 @@ class AdminController {
                                                         }
                                                         res.status(200).json({
                                                             success: true,
-                                                            data: adminData
+                                                            data: {
+                                                                status: 200,
+                                                                data: adminData
+                                                            }
                                                         });
                                                     }
                                                 });
@@ -190,7 +193,7 @@ class AdminController {
                                                 success: false,
                                                 data: {
                                                     status: 404,
-                                                    messgae: "Email and password does not match"
+                                                    message: "Email and password does not match"
                                                 }
                                             });
                                         }
@@ -200,7 +203,7 @@ class AdminController {
                                             success: false,
                                             data: {
                                                 status: 404,
-                                                messgae: "User not found"
+                                                message: "User not found"
                                             }
                                         });
                                     }
@@ -286,7 +289,7 @@ class AdminController {
                                                             success: false,
                                                             data: {
                                                                 status: 404,
-                                                                messgae: "Email and password does not match"
+                                                                message: "Email and password does not match"
                                                             }
                                                         });
                                                     }
@@ -296,7 +299,7 @@ class AdminController {
                                                         success: false,
                                                         data: {
                                                             status: 404,
-                                                            messgae: "User not found"
+                                                            message: "User not found"
                                                         }
                                                     });
                                                 }
@@ -366,7 +369,7 @@ class AdminController {
                                                         success: false,
                                                         data: {
                                                             status: 404,
-                                                            messgae: "Email and password does not match"
+                                                            message: "Email and password does not match"
                                                         }
                                                     });
                                                 }
@@ -376,7 +379,7 @@ class AdminController {
                                                     success: false,
                                                     data: {
                                                         status: 404,
-                                                        messgae: "User not found"
+                                                        message: "User not found"
                                                     }
                                                 });
                                             }

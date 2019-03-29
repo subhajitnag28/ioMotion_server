@@ -158,7 +158,7 @@ class UserController {
                                 res.status(404).json({
                                     success: false,
                                     data: {
-                                        messgae: "Email and password does not match"
+                                        message: "Email and password does not match"
                                     }
                                 });
                             }
