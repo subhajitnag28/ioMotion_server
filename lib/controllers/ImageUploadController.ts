@@ -112,7 +112,7 @@ export class ImageUploadController {
                                                     data: {
                                                         status: 200,
                                                         filename: image.filename,
-                                                        message: "Image upload successfully."
+                                                        message: "Image upload successfully"
                                                     }
                                                 });
                                             }
