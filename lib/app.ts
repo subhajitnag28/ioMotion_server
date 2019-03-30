@@ -19,7 +19,7 @@ class App {
     public microservicesRoutes: MicroservicesRoutes = new MicroservicesRoutes();
     public edgeDeviceConfigRoutes: EdgeDeviceConfigRoutes = new EdgeDeviceConfigRoutes();
     public dev_uri: string = 'mongodb://localhost:27017/ioMotion_Server';
-    public prod_uri: string = 'mongodb://ioMotion:ioMotion1234@ds121624.mlab.com:21624/iomotion';
+    public prod_uri: string = '';
 
     constructor() {
         this.app = express();
